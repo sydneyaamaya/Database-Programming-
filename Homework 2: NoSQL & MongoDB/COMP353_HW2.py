@@ -2,7 +2,7 @@ import pymongo
 import datetime, pprint
 from pymongo import MongoClient
 
-client = MongoClient("mongodb+srv://lucuser:csclassluc@luccluster.jvo5zef.mongodb.net/?appName=LUCcluster")
+client = MongoClient("")
 
 db = client.sample_airbnb
 
@@ -297,4 +297,5 @@ def query_6():
             pprint.pprint(result)
 
 query_6()
+
 
