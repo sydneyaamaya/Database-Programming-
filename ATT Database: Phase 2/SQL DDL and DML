@@ -1,0 +1,208 @@
+Create table CUSTOMER (
+CustomerID           	 varchar(6) not null,
+CustomerFirstName    varchar(50) not null,
+CustomerLastName     varchar(50) not null,
+CustomerEmail        	 varchar(120) not null,
+CustomerPhoneNumber  	varchar(20) not null,
+CustomerAddress      	varchar(200) not null,
+primary key (CustomerID),
+unique (CustomerEmail)
+);
+
+Create table ACCOUNT (
+AccountID           varchar(6) not null,
+CustomerID          varchar(6) not null,
+AccountBalance      decimal(12,2) not null check (AccountBalance >= 0),
+AccountType         varchar(30) not null check (AccountType in 					('Mobile','Internet','Wireless')),
+AccountStatus       varchar(20) not null check (AccountStatus in   					('active','inactive','suspended')),
+AccountCreatedDate  date not null,
+primary key (AccountID),
+foreign key (CustomerID) references CUSTOMER(CustomerID) on delete restrict
+);
+
+Create table PLAN (
+PlanID		  varchar(6) not null,
+PlanName          varchar(20) not null, 
+PlanMonthlyFee   decimal(10,2) not null check (PlanMonthlyFee > 0), 
+PlanDataLimitGB  integer check (PlanDataLimitGB is null or PlanDataLimitGB >= 0),
+PlanShareable     boolean not null default true,
+primary key (PlanID)
+);
+
+Create table CONTRACT (
+  	ContractID        	varchar(6) not null,
+ 	AccountID     		 varchar(6) not null,
+ 	PlanID           		 varchar(6) not null,
+ 	ContractStartDate 	date not null, 	
+ 	ContractEndDate  	 date check (ContractEndDate is null or ContractStartDate < 		ContractEndDate), 
+ContractStatus    	varchar(20) not null check (ContractStatus in 	 			('active','expired','canceled')),
+  	primary key (ContractID),
+foreign key (AccountID) references ACCOUNT(AccountID),
+foreign key (PlanID) references PLAN(PlanID),
+unique (AccountID, PlanID, ContractStatus)
+);
+
+Create table INVOICE (
+    InvoiceID varchar(6) not null,
+    AccountID varchar(6) not null,
+    InvoiceDate date not null,
+    InvoiceDueDate date not null check (InvoiceDueDate > InvoiceDate),
+    InvoiceAmount decimal(12,2) not null check (InvoiceAmount >= 0),
+    InvoiceStatus varchar(10) not null check (InvoiceStatus in ('unpaid','paid','overdue')),
+    primary key (InvoiceID),
+    foreign key (AccountID) references ACCOUNT(AccountID) on delete restrict
+);
+
+Create Table DEVICE (
+    DeviceID varchar(6) not null,
+    AccountID varchar (6) not null,
+    DeviceIMEI varchar(20) not null Unique,
+    DeviceModel varchar(50) not null,
+    primary key (DeviceID),
+    Foreign key (AccountID) REFERENCES ACCOUNT(AccountID) on delete restrict
+);
+
+Insert into CUSTOMER (CustomerID, CustomerFirstName, CustomerLastName, CustomerEmail, CustomerPhoneNumber, CustomerAddress)
+values
+('C001','Emma','Johnson','emma.johnson@email.com','3125551234','123 Oak St, Chicago IL'),
+('C002','Liam','Smith','liam.smith@email.com','7735554567','456 Pine Ave, Evanston IL'),
+('C003','Ava','Brown','ava.brown@email.com','8475557890','789 Maple Dr, Skokie IL'),
+('C004','Noah','Davis','noah.davis@email.com','6305552345','321 Birch Ln, Naperville IL'),
+('C005','Olivia','Miller','olivia.miller@email.com','2245556789','654 Cedar St, Glenview IL'),
+('C006','Ethan','Garcia','ethan.garcia@email.com','7085559123','987 Walnut Rd, Oak Park IL'),
+('C007','Sophia','Martinez','sophia.martinez@email.com','3125556789','245 Elm St, Chicago IL'),
+('C008','Mason','Anderson','mason.anderson@email.com','7735553456','457 Poplar Dr, Des Plaines IL'),
+('C009','Isabella','Thomas','isabella.thomas@email.com','8475559988','122 Spruce Ln, Schaumburg IL'),
+('C010','James','White','james.white@email.com','7085557654','88 Hickory Rd, Oak Lawn IL'),
+('C011','Mia','Hernandez','mia.hernandez@email.com','6305553344','210 Willow Ave, Aurora IL'),
+('C012','Lucas','Lopez','lucas.lopez@email.com','2245551122','512 Aspen Blvd, Palatine IL');
+
+Insert into ACCOUNT (AccountID, CustomerID, AccountBalance, AccountType, AccountStatus, AccountCreatedDate)
+values
+('A001','C001', 75.50,'Mobile','active','2024-09-15'),
+('A002','C001', 45.25,'Internet','active','2024-10-10'),
+('A003','C002',  0.00,'Wireless','inactive','2023-07-10'),
+('A004','C002', 90.00,'Mobile','active','2024-03-22'),
+('A005','C003',152.75,'Internet','active','2024-02-22'),
+('A006','C004', 60.00,'Wireless','suspended','2024-01-18'),
+('A007','C005',105.00,'Mobile','active','2024-03-01'),
+('A008','C006', 85.25,'Internet','active','2024-04-10'),
+('A009','C007', 20.50,'Wireless','inactive','2023-12-15'),
+('A010','C008', 99.99,'Mobile','active','2024-05-01'),
+('A011','C009',130.00,'Internet','active','2024-06-10'),
+('A012','C003', 40.75,'Wireless','active','2024-07-05');
+
+Insert into PLAN(PlanID, PlanName, PlanMonthlyFee, PlanDataLimitGB, PlanShareable)
+ Values
+('P001','Unlimited Premium PL',50.99,null,true),
+('P002','Unlimited Extra EL',40.99,null,true),
+('P003','Unlimited Starter SL',35.99,null,true),
+('P004','Value Plus VL',30.99,5,true),
+('P005','4GB',40.00,4,true),
+('P006','Value Plus VL',30.99,5,true),
+('P007','Family Share 10GB',45.00,10,true),
+('P008','Business Max',60.00,null,true),
+('P009','Student Saver 2GB',25.00,2,false),
+('P010','Senior Connect',28.99,3,false),
+('P011','Unlimited Enterprise',75.00,null,true),
+('P012','Eco Saver',32.50,6,true);
+
+Insert into CONTRACT(ContractID, AccountID, PlanID, ContractStartDate, ContractEndDate, ContractStatus)
+	values
+	('CT001','A001','P001','2024-09-15','2025-09-15','active'),
+('CT002','A002','P002','2024-10-10','2025-10-10','active'),
+('CT003','A003','P003','2023-07-10','2024-07-10','expired'),
+('CT004','A004','P001','2024-03-22','2025-03-22','active'),
+('CT005','A005','P002','2024-02-22','2025-02-22','active'),
+('CT006','A006','P003','2024-01-18','2024-06-18','canceled'),
+('CT007','A007','P004','2024-03-01','2025-03-01','active'),
+('CT008','A008','P005','2024-04-10','2025-04-10','active'),
+('CT009','A009','P006','2023-12-15','2024-06-15','expired'),
+('CT010','A010','P007','2024-05-01','2025-05-01','active'),
+('CT011','A011','P008','2024-06-10','2025-06-10','active'),
+('CT012','A012','P009','2024-07-05','2025-07-05','active');
+
+Insert into INVOICE(InvoiceID, AccountID, InvoiceDate, InvoiceDueDate, InvoiceAmount, InvoiceStatus)
+values
+('I001','A001','2024-09-15','2024-10-15',75.50,'paid'),
+('I002','A002','2024-10-10','2024-11-10',45.25,'unpaid'),
+('I003','A004','2024-03-22','2024-04-22',90.00,'paid'),
+('I004','A005','2024-02-22','2024-03-22',152.75,'overdue'),
+('I005','A007','2024-03-01','2024-04-01',105.00,'unpaid'),
+('I006','A008','2024-04-10','2024-05-10',85.25,'paid'),
+('I007','A010','2024-05-01','2024-06-01',99.99,'overdue'),
+('I008','A011','2024-06-10','2024-07-10',130.00,'unpaid'),
+('I009','A012','2024-07-05','2024-08-05',40.75,'paid');
+
+Insert into DEVICE(DeviceID, AccountID, DeviceIMEI, DeviceModel)
+Values
+('D001', 'A001', 'IMEI100000000001', 'iPhone 15 Pro'),
+('D002', 'A002', 'IMEI100000000002', 'Samsung Galaxy S24'),
+('D003', 'A004', 'IMEI100000000003', 'Google Pixel 8'),
+('D004', 'A005', 'IMEI100000000004', 'iPad Air'),
+('D005', 'A007', 'IMEI100000000005', 'iPhone 14'),
+('D006', 'A008', 'IMEI100000000006', 'Samsung Galaxy Tab S9'),
+('D007', 'A010', 'IMEI100000000007', 'Apple Watch Ultra'),
+('D008', 'A011', 'IMEI100000000008', 'Samsung Galaxy Z Flip'),
+('D009', 'A012', 'IMEI100000000009', 'Motorola Edge 50');
+
+Select	 c.CustomerID, c.CustomerFirstName, c.CustomerLastName, c.CustomerEmail,
+string_agg(distinct p.PlanName, ', ' order by p.PlanName) as ActivePlans, sum(a.AccountBalance) as TotalActiveBalance, count(distinct a.AccountID) as NumActiveAccounts, count(distinct ct.ContractID) as NumActiveContracts
+From CUSTOMER c
+Join ACCOUNT  a  on a.CustomerID = c.CustomerID
+Join CONTRACT ct on ct.AccountID = a.AccountID
+Join PLAN     p  on p.PlanID     = ct.PlanID
+Where a.AccountStatus = 'active'
+And ct.ContractStatus = 'active'
+Group by	c.CustomerID, c.CustomerFirstName, c.CustomerLastName, c.CustomerEmail
+Order by	TotalActiveBalance desc, NumActiveContracts desc
+
+SELECT  c.CustomerID, c.CustomerFirstName, c.CustomerLastName, a.AccountID,  
+    COUNT(d.DeviceID) AS NumDevices,  
+    COUNT(DISTINCT ct.ContractID) AS NumActiveContracts  
+FROM CUSTOMER c, ACCOUNT a, DEVICE d, CONTRACT ct  
+WHERE 
+c.CustomerID = a.CustomerID 
+AND a.AccountID = d.AccountID 
+AND a.AccountID = ct.AccountID
+AND a.AccountStatus = 'active'  
+AND ct.ContractStatus = 'active'  
+GROUP BY  
+    c.CustomerID, c.CustomerFirstName, c.CustomerLastName, a.AccountID  
+ORDER BY  
+    NumDevices DESC, NumActiveContracts DESC;
+
+Select		c.CustomerID, c.CustomerFirstName, c.CustomerLastName, c.CustomerEmail, count(ct.ContractID) as NumActiveContracts
+From 		CUSTOMER c, ACCOUNT a, CONTRACT ct
+Where 		c.CustomerID = a.CustomerID
+And 		a.AccountID = ct.AccountID
+And 		ct.ContractStatus = 'active'
+Group by 	c.CustomerID, c.CustomerFirstName, c.CustomerLastName, C.CustomerEmail
+Order by 	NumActiveContracts DESC;
+
+Select         p.PlanName, count (*) as numberOfAccounts, a.AccountID, c.AccountID,     p.PlanName, c.ContractStatus, a.AccountBalance, p.PlanMonthlyFee
+From         Plan p, Account a, Contract c
+Group by     a.accountID, c.AccountID, c.contractStatus, p.PlanName, a.AccountBalance, p.PlanMonthlyFee
+Having     c.AccountID = a.AccountID 
+And        c.contractStatus = 'active' 
+And         a.AccountBalance < p.PlanMonthlyFee  
+Order by     a.AccountBalance 
+			
+Select         p.PlanName, count (*) as numberOfAccounts, a.AccountID, c.AccountID,     p.PlanName, c.ContractStatus, a.AccountBalance, p.PlanMonthlyFee
+From         Plan p, Account a, Contract c
+Group by     a.accountID, c.AccountID, c.contractStatus, p.PlanName, a.AccountBalance, p.PlanMonthlyFee
+Having     c.AccountID = a.AccountID 
+And        c.contractStatus = 'active' 
+And         a.AccountBalance < p.PlanMonthlyFee  
+Order by     a.AccountBalance 
+			
+select 
+    a.accountid,
+    sum(i.invoiceamount) as totalinvoiceamount,
+    sum(case when i.invoicestatus = 'paid' then i.invoiceamount else 0 end) as totalpaidamount,
+    sum(case when i.invoicestatus = 'unpaid' then i.invoiceamount else 0 end) as totalunpaidamount,
+    count(*) filter (where i.invoicestatus = 'overdue') as numoverdueinvoices
+from account a
+join invoice i on a.accountid = i.accountid
+group by a.accountid
+order by totalunpaidamount desc;
