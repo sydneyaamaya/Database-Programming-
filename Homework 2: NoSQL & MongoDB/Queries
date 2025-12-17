@@ -1,0 +1,27 @@
+1. [16 points] Find the top 3 most expensive listings in terms of monthly price in Australia with exactly 2 bedrooms. Only return the top 3 results, that is, limit to 3 and sort in descending order.
+(Fields): _id, name, price, property type
+
+2. [16 points] Find the listings with country code ‘US’, room type ‘Entire home/apt’, the minimum number of nights required is 3, and the price range is between $700 to $1,000. The price ranges 
+should be inclusive. Sort the results by price in ascending order.
+(Fields): _id, name, price, bedrooms, number of reviews
+
+3. [17 points] Find the top 5 most expensive listings in terms of monthly price, but where the number of beds in the listing is greater than the number of bedrooms or the number of beds in 
+the listing is greater than the number of people this listing can accommodate (accommodates). Your output should be limited to 5 results sorted in descending order by monthly price. Hint: 
+Consider using the $expr operator.
+(Fields): _id, name, beds, bedrooms, accommodates
+
+4. [17 points] Find the listings with at least these amenities: ‘Wifi’, ‘Kitchen’, ‘Pets allowed’, and a minimum 6 bedrooms. In the output, in addition to outputting ‘name’ and ‘price’, 
+also include the total number of amenities contained in the listing. Sort the output by price in ascending order. Hint: There is an operator specifically for getting the size of an array.
+(Fields): _id, name, price, amenity count
+
+
+5. [17 points] For listings with 10 or more reviews, a review score of 80 or greater, and a host response rate of 90 or greater, compute the average review score rating by government area. 
+Round the average review score rating to 2 decimal points. Sort the output by the government area name in ascending order and limit the output to 5 government areas. Hint: Consider using an 
+aggregation pipeline with $match, $group, $project, $sort, and $limit.
+(Fields): avg rating, government area
+
+6. [17 points] For listings that accommodate 15 or more guests, compute the average price, the average cleaning fee, and the count of the listings per property type. If the cleaning free is 
+null or missing, replace the null or missing with a default value of 0.0. This data cleanup step must be done in the query itself. Round the average price and average cleaning fee to 2 decimal 
+points. Sort the final list of property types by average price in descending order and limit the output to 5 property types. Hint: Consider using an aggregation pipeline with $match, $group, 
+$project, $sort, and $limit. Consider using the $ifNull operator.(Fields): property type, avg price, avg cleaning fee, listing count
+
